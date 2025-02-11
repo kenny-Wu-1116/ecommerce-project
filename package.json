@@ -6,6 +6,7 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
+    "deploy": "gh-pages --dotfiles -d .output/public",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
@@ -16,5 +17,8 @@
     "pinia": "^2.3.1",
     "vue": "latest",
     "vue-router": "latest"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
   }
 }

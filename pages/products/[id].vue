@@ -1,9 +1,8 @@
 <template>
-  <div class="container mt-5 pt-5" v-if="product">
-    <DetailBreadcrumb :productTitle="product.title" />
-    <DetailProductDetail :product="product" v-model="selectedQuantity" @addToCart="addToCart" @goToCart="goToCart" />
-
-    <DetailRelatedProducts :products="relatedProducts" />
+  <div class="container mt-5 pt-5" v-if="!productStore.loading && productStore.product">
+    <DetailBreadcrumb :productTitle="productStore.product.title" />
+    <DetailProductDetail :product="productStore.product" v-model="selectedQuantity" @addToCart="addToCart" />
+    <DetailRelatedProducts :products="productStore.relatedProducts" />
     <DetailToastNotification v-if="showToast" :message="toastMessage" @close="() => (showToast = false)" />
   </div>
 
@@ -17,56 +16,33 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
-import { useCartStore } from '~/stores/cart';
+import { ref, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
-const product = ref(null);
-const relatedProducts = ref([]);
-const route = useRoute();
-const cartStore = useCartStore();
-const selectedQuantity = ref(1);
-const showToast = ref(false);
-const toastMessage = ref('');
-
-const fetchProduct = async () => {
-  try {
-    const response = await fetch(`https://dummyjson.com/products/${route.params.id}`);
-    const data = await response.json();
-    product.value = data;
-    fetchRelatedProducts(data.category);
-  } catch (error) {
-    console.error('Error fetching product:', error);
-  }
-};
-
-const fetchRelatedProducts = async (category) => {
-  try {
-    const response = await fetch(`https://dummyjson.com/products/category/${category}?limit=5`);
-    const data = await response.json();
-    relatedProducts.value = data.products.filter((p) => p.id !== product.value.id);
-  } catch (error) {
-    console.error('Error fetching related products:', error);
-  }
-};
+const route = useRoute()
+const cartStore = useCartStore()
+const productStore = useProductStore()
+const selectedQuantity = ref(1)
+const showToast = ref(false)
+const toastMessage = ref('')
 
 const addToCart = (product, quantity) => {
-  const parsedQuantity = parseInt(quantity, 10);
-  cartStore.addToCart({ ...product, quantity: parsedQuantity });
-  toastMessage.value = '已成功加入購物車!';
-  showToast.value = true;
+  const parsedQuantity = parseInt(quantity, 10)
+  cartStore.addToCart({ ...product, quantity: parsedQuantity })
+  toastMessage.value = '已成功加入購物車!'
+  showToast.value = true
   setTimeout(() => {
-    showToast.value = false;
-  }, 1500);
-};
+    showToast.value = false
+  }, 1500)
+}
 
 onMounted(() => {
-  fetchProduct();
-});
+  productStore.fetchProduct(route.params.id)
+})
 
 watch(route, () => {
-  fetchProduct();
-});
+  productStore.fetchProduct(route.params.id)
+})
 </script>
 
 <style scoped>

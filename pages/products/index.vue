@@ -47,33 +47,25 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
+const productStore = useProductStore();
+
 const searchQuery = ref("");
 const selectedCategory = ref(route.query.category || "");
 const isCardView = ref(true);
 const isSidebarOpen = ref(false);
 
-const { data: products } = await useFetch("https://dummyjson.com/products?limit=112");
-
-const uniqueCategories = computed(() => {
-  const categories = products.value.products.map((product) => product.category);
-  return [...new Set(categories)];
+onMounted(() => {
+  productStore.fetchProducts();
 });
 
+const uniqueCategories = computed(() => productStore.categories);
+
 const filteredProducts = computed(() => {
-  let filtered = products.value.products;
-  if (searchQuery.value) {
-    filtered = filtered.filter((product) =>
-      product.title.toLowerCase().includes(searchQuery.value.toLowerCase())
-    );
-  }
-  if (selectedCategory.value) {
-    filtered = filtered.filter((product) => product.category === selectedCategory.value);
-  }
-  return filtered;
+  return productStore.getFilteredProducts(searchQuery.value, selectedCategory.value);
 });
 
 watch(
@@ -101,7 +93,6 @@ const closeSidebar = () => {
 </script>
 
 <style scoped>
-/* 遮罩背景 */
 .overlay {
   position: fixed;
   top: 0;
@@ -112,7 +103,6 @@ const closeSidebar = () => {
   z-index: 1049;
 }
 
-/* 側邊欄（手機版） */
 .mobile-sidebar {
   position: fixed;
   top: 0;
@@ -125,16 +115,13 @@ const closeSidebar = () => {
   z-index: 1050;
   overflow-y: auto;
   transform: translateX(-100%);
-  /* 預設隱藏 */
   transition: transform 0.3s ease-in-out;
 }
 
-/* 顯示時滑入 */
 .mobile-sidebar.show {
   transform: translateX(0);
 }
 
-/* 關閉按鈕 */
 .btn-close {
   position: absolute;
   top: 10px;
@@ -143,7 +130,6 @@ const closeSidebar = () => {
   cursor: pointer;
 }
 
-/* 桌機版側邊欄 */
 .sidebar {
   position: sticky;
   top: 90px;

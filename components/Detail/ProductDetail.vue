@@ -38,7 +38,6 @@ defineProps({
 });
 </script>
 
-
 <style scoped>
 .product-detail {
   max-width: 1100px;

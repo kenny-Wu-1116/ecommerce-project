@@ -48,8 +48,7 @@ defineProps({
 
 @media (max-width: 768px) {
   .breadcrumb {
-    background-color: transparent;
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 }
 </style>

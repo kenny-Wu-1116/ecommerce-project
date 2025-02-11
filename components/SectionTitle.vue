@@ -71,4 +71,10 @@ onMounted(() => {
     font-size: 1.5rem;
   }
 }
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 1.1rem;
+  }
+}
 </style>

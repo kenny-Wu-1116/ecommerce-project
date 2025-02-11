@@ -7,6 +7,8 @@ export default defineNuxtConfig({
   ],
 
   app: {
+    baseURL: process.env.NODE_ENV === 'production' ? '/ecommerce-project/' : '/',
+    buildAssetsDir: '/static/',
     head: {
       title: "nuxt3",
       meta: [
@@ -35,5 +37,6 @@ export default defineNuxtConfig({
     // ...
     '@pinia/nuxt',
   ],
+  
 
 })
